@@ -1,0 +1,425 @@
+:root {
+  --bg: #07081a;
+  --ink: #f4efe0;
+  --gold: #ffd23a;
+  --red: #e0262b;
+  --blue: #2f6fd6;
+  --display: "Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--display);
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cabinet {
+  height: 100dvh;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #15183a 0%, var(--bg) 70%);
+}
+
+/* The game keeps a 16:9 screen, letterboxed to fit the window. */
+.screen,
+.select,
+.loading {
+  position: relative;
+  width: min(100vw, calc(100dvh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+  container-type: inline-size;
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  font-size: 3cqw;
+  letter-spacing: 0.2em;
+}
+
+.arena {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-family: var(--mono);
+}
+
+/* ---------- HUD ---------- */
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-shadow: 0.15cqw 0.15cqw 0 #000;
+}
+
+.hud-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2cqw;
+  padding: 2cqw 3cqw 0;
+}
+
+.hud-player {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5cqw;
+}
+
+.hud-player.right {
+  align-items: flex-end;
+}
+
+.hud-score {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 1.7cqw;
+  color: #9ad1ff;
+}
+
+.hud-score span {
+  color: var(--ink);
+  margin-left: 0.6cqw;
+}
+
+.hud-bar {
+  position: relative;
+  width: 100%;
+  height: 2.2cqw;
+  background: var(--red);
+  border: 0.25cqw solid #f4efe0;
+  box-shadow: 0 0 0 0.2cqw #000;
+}
+
+.hud-bar-lag,
+.hud-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.hud-bar-lag {
+  background: #fff;
+  transition: width 0.5s ease-in 0.35s;
+}
+
+.hud-bar-fill {
+  background: linear-gradient(#fff36b, var(--gold) 55%, #e2a400);
+  transition: width 0.08s linear;
+}
+
+.left .hud-bar-lag,
+.left .hud-bar-fill {
+  left: 0;
+}
+
+.right .hud-bar-lag,
+.right .hud-bar-fill {
+  right: 0;
+}
+
+.hud-name {
+  display: flex;
+  gap: 1cqw;
+  align-items: center;
+  font-size: 2.2cqw;
+  font-style: italic;
+  letter-spacing: 0.08em;
+}
+
+.right .hud-name {
+  flex-direction: row-reverse;
+}
+
+.hud-wins i {
+  font-style: normal;
+  color: var(--gold);
+  margin: 0 0.15cqw;
+}
+
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-ko {
+  font-size: 2.2cqw;
+  color: var(--red);
+  background: var(--gold);
+  padding: 0 0.6cqw;
+  font-style: italic;
+  text-shadow: none;
+  line-height: 2.7cqw;
+}
+
+.hud-timer {
+  font-size: 5cqw;
+  line-height: 1.1;
+  font-family: var(--mono);
+  font-weight: 800;
+}
+
+.hud-banner {
+  position: absolute;
+  top: 38%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8cqw;
+  font-style: italic;
+  color: var(--gold);
+  -webkit-text-stroke: 0.25cqw var(--red);
+  text-shadow: 0.5cqw 0.5cqw 0 #000;
+  animation: slam 0.35s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.hud-banner-sub {
+  font-size: 4cqw;
+  color: #fff;
+  -webkit-text-stroke: 0.15cqw var(--blue);
+}
+
+@keyframes slam {
+  from {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- Overlays ---------- */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4cqw;
+  background: rgb(4 5 18 / 0.6);
+}
+
+.overlay.result {
+  justify-content: flex-end;
+  padding-bottom: 8cqw;
+  background: linear-gradient(transparent 50%, rgb(4 5 18 / 0.8));
+}
+
+.overlay h2 {
+  margin: 0 0 1cqw;
+  font-size: 4.5cqw;
+  font-style: italic;
+  color: var(--gold);
+  text-shadow: 0.3cqw 0.3cqw 0 #000;
+}
+
+.overlay button,
+.start,
+.modes button {
+  min-width: 26cqw;
+  padding: 1cqw 2cqw;
+  font-size: 1.8cqw;
+  letter-spacing: 0.06em;
+  background: #141838;
+  border: 0.25cqw solid #f4efe0;
+  box-shadow: 0.4cqw 0.4cqw 0 #000;
+}
+
+.overlay button:hover,
+.overlay button:focus-visible,
+.start:hover,
+.start:focus-visible {
+  background: var(--red);
+}
+
+/* ---------- Select screen ---------- */
+
+.select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6cqw;
+  padding: 2.5cqw 4cqw;
+  background:
+    radial-gradient(ellipse at 50% 120%, #6b1f2f 0%, transparent 60%),
+    linear-gradient(#0a0c26, #161036);
+}
+
+.title {
+  margin: 0;
+  font-size: 6cqw;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  -webkit-text-stroke: 0.2cqw var(--red);
+  text-shadow: 0.5cqw 0.5cqw 0 #000;
+}
+
+.title span {
+  color: var(--red);
+  -webkit-text-stroke-color: var(--gold);
+}
+
+.modes {
+  display: flex;
+  gap: 1.5cqw;
+}
+
+.modes button {
+  min-width: 20cqw;
+  opacity: 0.55;
+}
+
+.modes button.on {
+  opacity: 1;
+  background: var(--blue);
+}
+
+small {
+  font-family: var(--mono);
+  font-size: 0.65em;
+  opacity: 0.7;
+  margin-left: 0.6em;
+}
+
+.select-row {
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+}
+
+.vs {
+  font-size: 5cqw;
+  font-style: italic;
+  color: var(--red);
+  text-shadow: 0.3cqw 0.3cqw 0 #000;
+}
+
+.select-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8cqw;
+  width: 32cqw;
+}
+
+.select-label {
+  font-size: 1.8cqw;
+  color: #9ad1ff;
+}
+
+.select-cards {
+  display: flex;
+  gap: 1.2cqw;
+}
+
+.card {
+  position: relative;
+  width: 13cqw;
+  height: 15cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.8cqw;
+  background: linear-gradient(160deg, #2a2f63, #0e1030);
+  border: 0.3cqw solid #3a3f78;
+  opacity: 0.6;
+  transition: transform 0.12s, opacity 0.12s;
+}
+
+.card.chosen {
+  border-color: var(--gold);
+  opacity: 1;
+  transform: translateY(-0.4cqw);
+  box-shadow: 0 0 2cqw rgb(255 210 58 / 0.45);
+}
+
+.p2 .card.chosen {
+  border-color: #9ad1ff;
+  box-shadow: 0 0 2cqw rgb(154 209 255 / 0.45);
+}
+
+/* A little gi-coloured silhouette standing in for a portrait. */
+.card-figure {
+  position: absolute;
+  top: 1.4cqw;
+  width: 5cqw;
+  height: 9.5cqw;
+  background:
+    radial-gradient(circle at 50% 9%, #e2b48c 0 1.05cqw, transparent 1.1cqw),
+    linear-gradient(var(--accent), var(--accent)) 50% 2.6cqw / 2.8cqw 0.35cqw no-repeat,
+    linear-gradient(#1a1a1a, #1a1a1a) 50% 5.6cqw / 3.4cqw 0.45cqw no-repeat,
+    linear-gradient(var(--gi), var(--gi)) 50% 3.2cqw / 3.4cqw 6.3cqw no-repeat;
+  filter: drop-shadow(0.2cqw 0.2cqw 0 #000);
+}
+
+.card-name {
+  font-size: 1.9cqw;
+  font-style: italic;
+  text-shadow: 0.2cqw 0.2cqw 0 #000;
+}
+
+.select-quote {
+  margin: 0;
+  min-height: 2.4em;
+  font-family: var(--mono);
+  font-size: 1.1cqw;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.start {
+  background: var(--red);
+  font-size: 2.4cqw;
+}
+
+.controls {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 1.2cqw;
+}
+
+.controls th,
+.controls td {
+  padding: 0.2cqw 1.4cqw;
+  text-align: left;
+}
+
+.controls thead th {
+  color: #9ad1ff;
+  font-weight: 600;
+}
+
+.moves {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 1.05cqw;
+  opacity: 0.75;
+  text-align: center;
+}
