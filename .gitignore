@@ -17,3 +17,15 @@ build
 
 # Fredrin's machine-local tool state — never project content
 .fredrin/
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# vercel
+.vercel
+
+# debug
+npm-debug.log*
