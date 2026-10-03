@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Machine-local tool state, not project code.
+    ".fredrin/**",
   ]),
 ]);
 

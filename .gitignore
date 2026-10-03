@@ -29,3 +29,6 @@ next-env.d.ts
 
 # debug
 npm-debug.log*
+
+# Playwright MCP screenshots/snapshots
+.playwright-mcp/
